@@ -63,11 +63,23 @@ export default async function DiscussionPage({ params }: { params: Promise<{ slu
             <h1 className="mt-5 font-serif text-3xl font-semibold leading-tight tracking-tight text-paper sm:text-4xl">{discussion.title}</h1>
 
             <div className="mt-6 flex items-center gap-3 border-y border-white/[0.06] py-4">
-              <Avatar path={profile?.avatar_path} name={profile?.display_name ?? "Üye"} />
+              {profile?.id ? (
+                <Link href={`/kullanici/${profile.id}`} className="shrink-0">
+                  <Avatar path={profile?.avatar_path} name={profile?.display_name ?? "Üye"} />
+                </Link>
+              ) : (
+                <Avatar path={profile?.avatar_path} name={profile?.display_name ?? "Üye"} />
+              )}
               <div>
-                <p className="flex items-center gap-2 text-sm font-medium text-paper">
-                  <UserIcon size={14} className="text-zinc-500" /> {profile?.display_name ?? "Üye"}
-                </p>
+                {profile?.id ? (
+                  <Link href={`/kullanici/${profile.id}`} className="flex items-center gap-2 text-sm font-medium text-paper hover:text-amber transition-colors">
+                    <UserIcon size={14} className="text-zinc-500" /> {profile?.display_name ?? "Üye"}
+                  </Link>
+                ) : (
+                  <p className="flex items-center gap-2 text-sm font-medium text-paper">
+                    <UserIcon size={14} className="text-zinc-500" /> {profile?.display_name ?? "Üye"}
+                  </p>
+                )}
                 {profile?.title && <p className="mt-0.5 text-xs font-semibold text-amber">{profile.title}</p>}
               </div>
               <span className="ml-auto text-xs text-zinc-500">{formatDate(discussion.created_at)}</span>

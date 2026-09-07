@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { CornerDownRight, MessageCircle, X, PenLine, ThumbsUp, ThumbsDown } from "lucide-react";
 import type { Comment, VoteCounts } from "@/lib/types";
 import { Avatar } from "@/components/avatar";
@@ -98,10 +99,22 @@ function CommentNode({
       {depth > 0 && <div className="absolute left-0 top-2 bottom-2 w-px bg-white/[0.07]" />}
       <div className={depth > 0 ? "ml-6 sm:ml-8" : ""}>
         <div className="flex gap-3">
-          <Avatar path={comment.profiles?.avatar_path} name={comment.profiles?.display_name ?? "Üye"} size="sm" />
+          {comment.profiles?.id ? (
+            <Link href={`/kullanici/${comment.profiles.id}`} className="shrink-0 rounded-full">
+              <Avatar path={comment.profiles?.avatar_path} name={comment.profiles?.display_name ?? "Üye"} size="sm" />
+            </Link>
+          ) : (
+            <Avatar path={comment.profiles?.avatar_path} name={comment.profiles?.display_name ?? "Üye"} size="sm" />
+          )}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-              <span className="text-sm font-semibold text-paper">{comment.profiles?.display_name ?? "Üye"}</span>
+              {comment.profiles?.id ? (
+                <Link href={`/kullanici/${comment.profiles.id}`} className="text-sm font-semibold text-paper hover:text-amber transition-colors">
+                  {comment.profiles?.display_name ?? "Üye"}
+                </Link>
+              ) : (
+                <span className="text-sm font-semibold text-paper">{comment.profiles?.display_name ?? "Üye"}</span>
+              )}
               {comment.profiles?.title && <span className="rounded-full bg-amber/10 px-2 py-0.5 text-xs font-semibold text-amber">{comment.profiles.title}</span>}
               <time className="text-xs text-zinc-600">{formatDate(comment.created_at)}</time>
             </div>

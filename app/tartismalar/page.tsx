@@ -40,24 +40,38 @@ export default async function TartismalarPage() {
         {list.length ? (
           <div className="space-y-3">
             {list.map((d) => (
-              <Link key={d.id} href={`/tartismalar/${d.slug}`} className="panel flex gap-4 p-4 hover:border-amber/20 transition-colors">
-                <Avatar path={d.profiles?.avatar_path} name={d.profiles?.display_name ?? "Üye"} size="sm" />
+              <div key={d.id} className="panel flex gap-4 p-4 hover:border-amber/20 transition-colors">
+                {d.profiles?.id ? (
+                  <Link href={`/kullanici/${d.profiles.id}`} onClick={(e) => e.stopPropagation()} className="shrink-0">
+                    <Avatar path={d.profiles?.avatar_path} name={d.profiles?.display_name ?? "Üye"} size="sm" />
+                  </Link>
+                ) : (
+                  <Avatar path={d.profiles?.avatar_path} name={d.profiles?.display_name ?? "Üye"} size="sm" />
+                )}
                 <div className="min-w-0 flex-1">
-                  <h2 className="truncate font-medium leading-tight text-paper">{d.title}</h2>
+                  <Link href={`/tartismalar/${d.slug}`} className="block truncate font-medium leading-tight text-paper hover:text-amber transition-colors">
+                    {d.title}
+                  </Link>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
-                    <span className="inline-flex items-center gap-1">
-                      <User size={12} /> {d.profiles?.display_name ?? "Üye"}
-                    </span>
+                    {d.profiles?.id ? (
+                      <Link href={`/kullanici/${d.profiles.id}`} onClick={(e) => e.stopPropagation()} className="inline-flex items-center gap-1 hover:text-amber">
+                        <User size={12} /> {d.profiles?.display_name ?? "Üye"}
+                      </Link>
+                    ) : (
+                      <span className="inline-flex items-center gap-1">
+                        <User size={12} /> {d.profiles?.display_name ?? "Üye"}
+                      </span>
+                    )}
                     {d.profiles?.title && <span className="rounded-full bg-amber/10 px-2 py-0.5 text-xs font-semibold text-amber">{d.profiles.title}</span>}
                     <span className="inline-flex items-center gap-1">
                       <Clock size={12} /> {new Date(d.created_at).toLocaleDateString("tr-TR")}
                     </span>
                   </div>
                 </div>
-                <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1 text-xs text-zinc-400">
+                <Link href={`/tartismalar/${d.slug}`} className="hidden sm:inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1 text-xs text-zinc-400 hover:bg-white/10 shrink-0">
                   <MessageCircle size={12} /> Tartışma
-                </span>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         ) : (

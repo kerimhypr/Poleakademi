@@ -102,11 +102,23 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
             {article.excerpt && <p className="mt-4 text-lg leading-8 text-zinc-400">{article.excerpt}</p>}
 
             <div className="mt-8 flex flex-wrap items-center gap-4 border-y border-white/[0.06] py-5">
-              <Avatar path={profile?.avatar_path} name={profile?.display_name ?? "Poleakademi"} />
+              {profile?.id ? (
+                <Link href={`/kullanici/${profile.id}`} className="shrink-0">
+                  <Avatar path={profile?.avatar_path} name={profile?.display_name ?? "Poleakademi"} />
+                </Link>
+              ) : (
+                <Avatar path={profile?.avatar_path} name={profile?.display_name ?? "Poleakademi"} />
+              )}
               <div className="min-w-0">
-                <p className="flex items-center gap-2 text-sm font-medium text-paper">
-                  <UserIcon size={14} className="text-zinc-500" /> {profile?.display_name ?? "Poleakademi"}
-                </p>
+                {profile?.id ? (
+                  <Link href={`/kullanici/${profile.id}`} className="flex items-center gap-2 text-sm font-medium text-paper hover:text-amber transition-colors">
+                    <UserIcon size={14} className="text-zinc-500" /> {profile?.display_name ?? "Poleakademi"}
+                  </Link>
+                ) : (
+                  <p className="flex items-center gap-2 text-sm font-medium text-paper">
+                    <UserIcon size={14} className="text-zinc-500" /> {profile?.display_name ?? "Poleakademi"}
+                  </p>
+                )}
                 {profile?.title && <p className="mt-0.5 text-xs font-semibold text-amber">{profile.title}</p>}
               </div>
               <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
