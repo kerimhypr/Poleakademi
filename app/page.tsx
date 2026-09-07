@@ -9,14 +9,12 @@ export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("articles")
-    .select("*")
-    .eq("status", "published")
-    .order("published_at", { ascending: false })
-    .limit(12);
-
-  const articles = (data ?? []) as Article[];
+  const [{ data: articlesData }, { data: discussionsData }] = await Promise.all([
+    supabase.from("articles").select("*").eq("status", "published").order("published_at", { ascending: false }).limit(6),
+    supabase.from("discussions").select("id,slug,title,created_at,author_id").order("created_at", { ascending: false }).limit(6),
+  ]);
+  const articles = (articlesData ?? []) as Article[];
+  const discussions = (discussionsData ?? []) as { id: string; slug: string; title: string; created_at: string; author_id: string }[];
 
   return (
     <main>
@@ -43,11 +41,11 @@ export default async function HomePage() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link href="#yayinlar" className="button">
-                Makaleleri keşfet <ArrowRight size={16} />
+              <Link href="/makaleler" className="button">
+                <BookOpen size={16} /> Pole&apos;nin Yazıları
               </Link>
-              <Link href="/kayit" className="button-secondary">
-                Topluluğa katıl
+              <Link href="/tartismalar" className="button-secondary">
+                <MessageCircle size={16} /> Tartışmalara göz at <ArrowRight size={16} />
               </Link>
             </div>
 
@@ -68,16 +66,17 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Articles */}
-      <section id="yayinlar" className="shell pb-16 sm:pb-24">
+      {/* Pole'nin Yazıları */}
+      <section id="pole-yazilari" className="shell pb-12">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
-            <h2 className="font-serif text-3xl font-semibold tracking-tight text-paper">Yayınlananlar</h2>
-            <p className="mt-2 text-sm text-zinc-500">Bağımsız İslam topluluğumuzun ilim ve müzakereyle harmanladığı yazılar.</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber">Resmi</p>
+            <h2 className="mt-1 font-serif text-3xl font-semibold tracking-tight text-paper">Pole&apos;nin Yazıları</h2>
+            <p className="mt-2 text-sm text-zinc-500">Sadece Pole tarafından paylaşılan resmi yazılar — yorum yapabilir, tartışmaya katılabilirsin ama yeni yazı ekleyemezsin.</p>
           </div>
-          <span className="hidden shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-zinc-400 sm:inline-flex">
-            {articles.length} makale
-          </span>
+          <Link href="/makaleler" className="hidden sm:inline-flex items-center gap-1 text-sm font-medium text-amber hover:text-amber/80">
+            Tümünü gör <ArrowRight size={14} />
+          </Link>
         </div>
 
         {articles.length ? (
@@ -92,11 +91,8 @@ export default async function HomePage() {
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber/10 text-amber">
                 <Feather size={24} />
               </div>
-              <h3 className="mt-6 font-serif text-2xl font-semibold text-paper">Henüz yayınlanmış makale yok.</h3>
-              <p className="mt-3 text-sm leading-6 text-zinc-500">
-                Akademi tertemiz bir sayfayla başlıyor. İlk düşünceyi paylaşmak için alan hazır —
-                hiçbir sahte veri, hiçbir örnek içerik yok.
-              </p>
+              <h3 className="mt-6 font-serif text-2xl font-semibold text-paper">Henüz resmi yazı yok.</h3>
+              <p className="mt-3 text-sm leading-6 text-zinc-500">Pole&apos;nin kaleminden ilk yazı bekleniyor — tertemiz, sahte içerik yok.</p>
               <div className="mt-6 flex items-center justify-center gap-2 text-xs text-zinc-600">
                 <BookOpen size={14} />
                 <span>Bağımsız bir İslam tartışma ve bilgilendirme topluluğu olarak yolculuğumuz başlıyor.</span>
@@ -104,15 +100,48 @@ export default async function HomePage() {
             </div>
           </div>
         )}
+      </section>
 
-        {articles.length > 0 && (
-          <div className="mt-10 flex justify-center">
-            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-zinc-500">
-              <MessageCircle size={14} className="text-amber" />
-              Her makale, nitelikli bir tartışmaya davettir.
-            </div>
+      {/* Tartışmalar - Reddit tarzı */}
+      <section id="tartismalar" className="shell pb-16 sm:pb-24">
+        <div className="mb-8 flex items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber">Topluluk</p>
+            <h2 className="mt-1 font-serif text-3xl font-semibold tracking-tight text-paper">Tartışmalar</h2>
+            <p className="mt-2 text-sm text-zinc-500">Reddit tarzı — herkesin açabildiği başlıklar, herkesin yorum yapabildiği özgür alan.</p>
+          </div>
+          <Link href="/tartismalar" className="button-secondary !px-4 !py-2 text-sm hidden sm:inline-flex">
+            Tüm tartışmalar <ArrowRight size={14} />
+          </Link>
+        </div>
+
+        {discussions.length ? (
+          <div className="grid gap-3">
+            {discussions.map((d) => (
+              <Link key={d.id} href={`/tartismalar/${d.slug}`} className="panel flex items-center justify-between gap-4 p-4 hover:border-amber/20">
+                <div className="min-w-0">
+                  <h3 className="truncate font-medium text-paper">{d.title}</h3>
+                  <p className="mt-1 text-xs text-zinc-500">{new Date(d.created_at).toLocaleDateString("tr-TR")}</p>
+                </div>
+                <span className="shrink-0 rounded-full bg-white/5 px-2.5 py-1 text-xs text-zinc-400">Tartışma</span>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="panel px-6 py-12 text-center">
+            <MessageCircle size={28} className="mx-auto text-zinc-700" />
+            <h3 className="mt-4 font-medium text-paper">Henüz tartışma yok</h3>
+            <p className="mt-2 text-sm text-zinc-500">İlk başlığı sen aç — topluluk seni bekliyor.</p>
+            <Link href="/tartismalar/yeni" className="button mt-5">
+              Yeni tartışma başlat
+            </Link>
           </div>
         )}
+        <div className="mt-6 flex justify-center sm:hidden">
+          <Link href="/tartismalar" className="button-secondary w-full justify-center">
+            Tüm tartışmalar
+          </Link>
+        </div>
       </section>
 
       {/* Manifesto */}

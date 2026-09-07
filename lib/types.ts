@@ -19,3 +19,11 @@ export type Comment = {
   id: string; article_id: string; author_id: string; parent_id: string | null;
   body: string; created_at: string; updated_at: string; profiles: Pick<Profile, "id" | "display_name" | "avatar_path" | "title"> | null;
 };
+export type Discussion = {
+  id: string; author_id: string; slug: string; title: string;
+  content: JsonNode; created_at: string; updated_at: string;
+};
+export type DiscussionComment = {
+  id: string; discussion_id: string; author_id: string; parent_id: string | null;
+  body: string; created_at: string; updated_at: string; profiles: Pick<Profile, "id" | "display_name" | "avatar_path" | "title"> | null;
+};

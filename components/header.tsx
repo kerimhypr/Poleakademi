@@ -22,6 +22,12 @@ export async function Header() {
         </Link>
 
         <nav className="flex items-center gap-2 text-sm">
+          <Link href="/makaleler" className="hidden sm:inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-medium text-zinc-400 hover:bg-white/5 hover:text-zinc-100">
+            <BookOpen size={14} /> Pole&apos;nin Yazıları
+          </Link>
+          <Link href="/tartismalar" className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-white/5 px-3 py-2 text-sm font-medium text-zinc-200 hover:bg-white/10">
+            Tartışmalar
+          </Link>
           {profile?.role === "admin" && (
             <Link href="/admin" className="button-secondary !px-3 !py-2 text-xs">
               <LayoutDashboard size={16} />
