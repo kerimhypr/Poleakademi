@@ -57,7 +57,7 @@ export default function ProfilePage() {
       <div className="mb-8">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber">Hesabın</p>
         <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-paper">Profilin</h1>
-        <p className="mt-2 text-sm text-zinc-500">Herkese nasıl göründüğünü buradan yönetirsin. Unvanını yalnızca yöneticiler değiştirebilir.</p>
+        <p className="mt-2 text-sm text-zinc-500">Bağımsız bir İslam tartışma ve bilgilendirme topluluğunun parçasısın. Profilin ilmi kimliğini yansıtsın.</p>
       </div>
 
       <div className="panel p-6 sm:p-8">
@@ -128,10 +128,10 @@ export default function ProfilePage() {
                   Şu anki unvanın: <span className="font-semibold text-paper">{profile.title}</span>
                 </>
               ) : (
-                "Henüz bir unvanın yok. Yöneticiler topluluk içindeki katkılarına göre sana bir unvan verebilir."
+                "Henüz bir unvanın yok. Topluluk içindeki ilmi katkınla zamanla bir unvan kazanabilirsin."
               )}
             </p>
-            <p className="mt-2 text-xs text-zinc-600">Not: Unvanı kendin değiştiremezsin — bu özellikle topluluğun organik kalması amaçlanıyor.</p>
+            <p className="mt-2 text-xs text-zinc-600">Bağımsız yapımız gereği unvanlar topluluk tarafından takdirin bir ifadesidir.</p>
           </div>
 
           {state.error && <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">{state.error}</p>}

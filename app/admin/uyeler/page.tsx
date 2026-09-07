@@ -19,7 +19,7 @@ export default async function MembersPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber">Yönetim alanı</p>
         <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-paper">Üyeler ve unvanlar</h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">
-          Üyeler kendi unvanlarını değiştiremez. Yalnızca yöneticiler unvan atayabilir veya kaldırabilir. Örn: Çaylak, Filozof, Ateşli Tartışmacı.
+          Bağımsız bir İslam tartışma ve bilgilendirme topluluğuyuz. Unvanlar, ilmi katkı ve topluluğa fayda esasına göre takdir edilir — Örn: Çaylak, Filozof, Ateşli Tartışmacı.
         </p>
       </div>
 

@@ -79,7 +79,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                 <Clock size={12} /> {estimateReadingTime(article.content)}
               </span>
               {article.status === "draft" && (
-                <span className="rounded-full bg-amber px-2.5 py-1 font-semibold text-black">Taslak — yalnızca yöneticiler görür</span>
+                <span className="rounded-full bg-amber px-2.5 py-1 font-semibold text-black">Taslak</span>
               )}
             </div>
 

@@ -13,20 +13,20 @@ export const metadata: Metadata = {
     template: "%s | Poleakademi",
   },
   description:
-    "Felsefe, din ve eleştirel düşünce üzerine derinlikli makaleler, tartışmalar ve akademik bir topluluk. Soruların peşinden, birlikte.",
-  keywords: ["felsefe", "din", "eleştirel düşünce", "akademi", "makale", "tartışma"],
+    "Bağımsız bir İslam tartışma ve bilgilendirme topluluğu. Felsefe, din ve eleştirel düşünce üzerine ilim ve delil merkezli makaleler ve müzakereler.",
+  keywords: ["islam", "felsefe", "din", "eleştirel düşünce", "tartışma", "ilim"],
   authors: [{ name: "Poleakademi" }],
   openGraph: {
     type: "website",
     locale: "tr_TR",
     siteName: "Poleakademi",
-    title: "Poleakademi — Düşüncenin Açık Alanı",
-    description: "Felsefe, din ve eleştirel düşünce için sade bir akademi.",
+    title: "Poleakademi — Bağımsız İslam Tartışma ve Bilgilendirme Topluluğu",
+    description: "Bağımsız bir İslam tartışma ve bilgilendirme topluluğu. İlim ve delil merkezli müzakereler.",
   },
   twitter: {
     card: "summary_large_image",
     title: "Poleakademi",
-    description: "Felsefe, din ve eleştirel düşünce için sade bir akademi.",
+    description: "Bağımsız bir İslam tartışma ve bilgilendirme topluluğu.",
   },
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://poleakademi.onrender.com"),
 };
@@ -46,9 +46,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span>© {new Date().getFullYear()} Düşüncenin açık alanı.</span>
               </div>
               <div className="flex items-center gap-6 text-xs tracking-wide text-zinc-500">
-                <span className="hidden sm:inline">Felsefe · Din · Eleştirel Düşünce</span>
+                <span className="hidden sm:inline">Bağımsız İslam Topluluğu</span>
                 <span className="h-3 w-px bg-white/10 hidden sm:block" />
-                <span>Topluluk odaklı · Reklamsız · Bağımsız</span>
+                <span>İlim · Delil · Müzakere</span>
               </div>
             </div>
           </div>

@@ -38,8 +38,8 @@ export default async function HomePage() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-7 text-zinc-400 sm:text-lg">
-              Poleakademi; felsefe, din ve eleştirel düşünce etrafında dikkatle okumak, yazmak ve
-              konuşmak için sade, reklamsız ve topluluk odaklı bir akademi.
+              Poleakademi, hiçbir cemaat ve gruba bağlı olmayan <span className="text-zinc-200">bağımsız bir İslam tartışma ve bilgilendirme topluluğudur</span>.
+              Felsefe, din ve eleştirel düşünce üzerine ilim ve delil merkezli, saygılı bir müzakere alanı.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -73,7 +73,7 @@ export default async function HomePage() {
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <h2 className="font-serif text-3xl font-semibold tracking-tight text-paper">Yayınlananlar</h2>
-            <p className="mt-2 text-sm text-zinc-500">Editörlerin seçtiği, topluluğun tartıştığı yazılar.</p>
+            <p className="mt-2 text-sm text-zinc-500">Bağımsız İslam topluluğumuzun ilim ve müzakereyle harmanladığı yazılar.</p>
           </div>
           <span className="hidden shrink-0 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-zinc-400 sm:inline-flex">
             {articles.length} makale
@@ -99,7 +99,7 @@ export default async function HomePage() {
               </p>
               <div className="mt-6 flex items-center justify-center gap-2 text-xs text-zinc-600">
                 <BookOpen size={14} />
-                <span>Yöneticiler /admin üzerinden ilk makaleyi ekleyebilir.</span>
+                <span>Bağımsız bir İslam tartışma ve bilgilendirme topluluğu olarak yolculuğumuz başlıyor.</span>
               </div>
             </div>
           </div>
@@ -124,16 +124,16 @@ export default async function HomePage() {
           </div>
           {[
             {
-              title: "Reklamsız & bağımsız",
-              desc: "Algoritma yok. Takip yok. Sadece metin ve düşünce.",
+              title: "Bağımsız & bağlantısız",
+              desc: "Hiçbir cemaate, gruba veya yapıya bağlı değiliz. Sadece ilim ve delil.",
             },
             {
-              title: "Unvanlar topluluktan",
-              desc: "Çaylak'tan Filozof'a — unvanları yalnızca yöneticiler verir, kimse kendi rozetini takmaz.",
+              title: "İslam temelli müzakere",
+              desc: "Bağımsız bir İslam tartışma ve bilgilendirme topluluğu — Kur'an, Sünnet ve ilmi gelenek ışığında felsefi ve eleştirel düşünce.",
             },
             {
-              title: "Tartışma forum gibi",
-              desc: "İç içe yanıtlar, saygılı dil, kalıcı metinler. Realtime gürültü yok.",
+              title: "Saygılı tartışma",
+              desc: "İç içe yanıtlar, delile dayalı dil, kalıcı metinler. Gürültü değil, derinlik.",
             },
           ].map((c) => (
             <div key={c.title} className="panel p-6">
