@@ -1,9 +1,58 @@
 import Link from "next/link";
-import { BookOpen, LayoutDashboard, LogOut, UserRound } from "lucide-react";
+import { BookOpen, LayoutDashboard, LogOut, UserRound, Feather } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
 
 export async function Header() {
   const { user, profile } = await getCurrentUser();
-  return <header className="border-b border-white/10 bg-ink/80 backdrop-blur"><div className="shell flex h-16 items-center justify-between gap-4"><Link href="/" className="flex items-center gap-2 font-serif text-xl font-semibold text-paper"><BookOpen size={21} className="text-amber" />poleakademi</Link><nav className="flex items-center gap-2 text-sm">{profile?.role === "admin" && <Link className="button-secondary !px-3 !py-2" href="/admin"><LayoutDashboard size={16} /></Link>}{user ? <><Link className="button-secondary !px-3 !py-2" href="/profil"><UserRound size={16} /><span className="hidden sm:inline">Profil</span></Link><form action={signOut}><button aria-label="Çıkış yap" className="button-secondary !px-3 !py-2"><LogOut size={16} /></button></form></> : <Link href="/giris" className="button-secondary !px-3 !py-2">Giriş yap</Link>}</nav></div></header>;
+
+  return (
+    <header className="sticky top-0 z-40 border-b border-white/[0.06] bg-ink/70 backdrop-blur-xl">
+      <div className="shell flex h-16 items-center justify-between gap-4">
+        <Link href="/" className="group flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber text-ink">
+            <BookOpen size={16} />
+          </span>
+          <span className="font-serif text-xl font-semibold tracking-tight text-paper group-hover:text-amber transition-colors">
+            poleakademi
+          </span>
+          <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs text-zinc-500 ml-1">
+            <Feather size={10} /> akademi
+          </span>
+        </Link>
+
+        <nav className="flex items-center gap-2 text-sm">
+          {profile?.role === "admin" && (
+            <Link href="/admin" className="button-secondary !px-3 !py-2 text-xs">
+              <LayoutDashboard size={16} />
+              <span className="hidden sm:inline">Yönetim</span>
+            </Link>
+          )}
+
+          {user ? (
+            <>
+              <Link href="/profil" className="button-secondary !px-3 !py-2">
+                <UserRound size={16} />
+                <span className="hidden sm:inline">Profil</span>
+              </Link>
+              <form action={signOut}>
+                <button aria-label="Çıkış yap" className="button-ghost !p-2.5">
+                  <LogOut size={16} />
+                </button>
+              </form>
+            </>
+          ) : (
+            <>
+              <Link href="/giris" className="button-ghost hidden sm:inline-flex">
+                Giriş yap
+              </Link>
+              <Link href="/kayit" className="button !px-4 !py-2 text-sm">
+                Kayıt ol
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
+    </header>
+  );
 }

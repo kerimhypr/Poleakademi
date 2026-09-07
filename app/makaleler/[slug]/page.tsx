@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
-import { CalendarDays, MessageCircle } from "lucide-react";
+import Link from "next/link";
+import { CalendarDays, ArrowLeft, Clock, User as UserIcon, MessageCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentUser } from "@/lib/auth";
 import { ArticleContent } from "@/components/article-content";
@@ -7,15 +8,117 @@ import { Comments } from "@/components/comments";
 import { Avatar } from "@/components/avatar";
 import type { Article, Comment, Profile } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
+
 export const revalidate = 0;
+export const dynamic = "force-dynamic";
+
+function estimateReadingTime(content: unknown): string {
+  try {
+    const text = JSON.stringify(content);
+    const words = text.split(/\s+/).length;
+    const minutes = Math.max(1, Math.round(words / 200));
+    return `${minutes} dk okuma`;
+  } catch {
+    return "—";
+  }
+}
+
 export default async function ArticlePage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params; const supabase = await createClient(); const { data } = await supabase.from("articles").select("*").eq("slug", slug).maybeSingle();
-  if (!data) notFound(); const article = data as Article;
+  const { slug } = await params;
+  const supabase = await createClient();
+
+  const { data } = await supabase.from("articles").select("*").eq("slug", slug).maybeSingle();
+  if (!data) notFound();
+  const article = data as Article;
+
+  // Only published articles are visible to anon; admins see all (RLS handles)
+  if (article.status !== "published") {
+    const { profile } = await getCurrentUser();
+    if (profile?.role !== "admin") notFound();
+  }
+
   const [{ data: author }, { data: comments }, { user }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", article.author_id).maybeSingle(),
-    supabase.from("comments").select("*, profiles!comments_author_id_fkey(id,display_name,avatar_path,title)").eq("article_id", article.id).order("created_at"),
+    supabase
+      .from("comments")
+      .select("*, profiles!comments_author_id_fkey(id,display_name,avatar_path,title)")
+      .eq("article_id", article.id)
+      .order("created_at", { ascending: true }),
     getCurrentUser(),
   ]);
-  const cover = article.cover_path ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/article-covers/${article.cover_path}` : null;
-  return <main className="shell max-w-4xl py-10 sm:py-16"><article><header className="mx-auto max-w-3xl"><p className="text-xs font-semibold uppercase tracking-[.18em] text-amber">Makale</p><h1 className="mt-4 font-serif text-4xl font-semibold leading-tight text-paper sm:text-6xl">{article.title}</h1>{article.excerpt && <p className="mt-6 text-lg leading-8 text-zinc-400">{article.excerpt}</p>}<div className="mt-8 flex flex-wrap items-center gap-4 border-y border-white/10 py-4"><Avatar path={(author as Profile | null)?.avatar_path} name={(author as Profile | null)?.display_name ?? "Yönetici"} /><div className="text-sm"><p className="font-medium text-paper">{(author as Profile | null)?.display_name ?? "Poleakademi"}</p>{(author as Profile | null)?.title && <p className="text-xs text-amber">{(author as Profile).title}</p>}</div><span className="ml-auto inline-flex items-center gap-1 text-xs text-zinc-500"><CalendarDays size={14} /> {formatDate(article.published_at)}</span></div></header>{cover && <img className="mt-10 aspect-[2/1] w-full rounded-2xl object-cover" src={cover} alt="Makale kapak görseli" />}<div className="mx-auto max-w-3xl"><ArticleContent content={article.content} /><div className="mt-10 flex items-center gap-2 border-t border-white/10 pt-6 text-sm text-zinc-500"><MessageCircle size={17} /> Okudukça çoğalan bir konuşma.</div><Comments comments={(comments ?? []) as Comment[]} articleId={article.id} slug={article.slug} signedIn={Boolean(user)} /></div></article></main>;
+
+  const cover = article.cover_path
+    ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/article-covers/${article.cover_path}`
+    : null;
+
+  const profile = author as Profile | null;
+
+  return (
+    <main className="shell max-w-4xl pb-16">
+      <div className="py-6">
+        <Link href="/" className="inline-flex items-center gap-2 text-sm text-zinc-500 hover:text-amber">
+          <ArrowLeft size={16} /> Ana sayfa
+        </Link>
+      </div>
+
+      <article className="panel overflow-hidden">
+        {cover && (
+          <div className="relative aspect-[16/9] overflow-hidden bg-black/20">
+            <img src={cover} alt="" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+          </div>
+        )}
+
+        <div className="p-6 sm:p-10">
+          <div className="mx-auto max-w-3xl">
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-amber/20 bg-amber/10 px-3 py-1 font-semibold uppercase tracking-widest text-amber">
+                Makale
+              </span>
+              <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2.5 py-1 text-zinc-400">
+                <Clock size={12} /> {estimateReadingTime(article.content)}
+              </span>
+              {article.status === "draft" && (
+                <span className="rounded-full bg-amber px-2.5 py-1 font-semibold text-black">Taslak — yalnızca yöneticiler görür</span>
+              )}
+            </div>
+
+            <h1 className="mt-5 font-serif text-4xl font-semibold leading-tight tracking-tight text-paper sm:text-5xl">{article.title}</h1>
+
+            {article.excerpt && <p className="mt-4 text-lg leading-8 text-zinc-400">{article.excerpt}</p>}
+
+            <div className="mt-8 flex flex-wrap items-center gap-4 border-y border-white/[0.06] py-5">
+              <Avatar path={profile?.avatar_path} name={profile?.display_name ?? "Poleakademi"} />
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 text-sm font-medium text-paper">
+                  <UserIcon size={14} className="text-zinc-500" /> {profile?.display_name ?? "Poleakademi"}
+                </p>
+                {profile?.title && <p className="mt-0.5 text-xs font-semibold text-amber">{profile.title}</p>}
+              </div>
+              <div className="ml-auto flex items-center gap-2 text-xs text-zinc-500">
+                <CalendarDays size={14} /> {formatDate(article.published_at ?? article.created_at)}
+              </div>
+            </div>
+          </div>
+
+          <div className="mx-auto mt-10 max-w-3xl">
+            <ArticleContent content={article.content} />
+          </div>
+
+          <div className="mx-auto mt-10 max-w-3xl">
+            <div className="flex items-center gap-2 border-t border-white/[0.06] pt-8 text-sm text-zinc-500">
+              <MessageCircle size={16} className="text-amber" />
+              Düşüncen varsa, tartışmaya katıl — her yanıt metni zenginleştirir.
+            </div>
+            <Comments
+              comments={(comments ?? []) as Comment[]}
+              articleId={article.id}
+              slug={article.slug}
+              signedIn={Boolean(user)}
+            />
+          </div>
+        </div>
+      </article>
+    </main>
+  );
 }

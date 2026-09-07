@@ -2,27 +2,167 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-* { border-color: rgb(255 255 255 / 0.1); }
-body { @apply min-h-screen bg-ink text-zinc-200 antialiased; background-image: radial-gradient(circle at 50% -20%, #263343 0%, transparent 38%); }
-a { @apply transition-colors; }
-.shell { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
-.panel { @apply rounded-2xl border border-white/10 bg-white/[0.035] shadow-2xl shadow-black/20; }
-.button { @apply inline-flex items-center justify-center rounded-lg bg-amber px-4 py-2.5 text-sm font-semibold text-zinc-950 hover:bg-amber/90 disabled:cursor-not-allowed disabled:opacity-50; }
-.button-secondary { @apply inline-flex items-center justify-center rounded-lg border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold text-zinc-100 hover:bg-white/10; }
-.field { @apply w-full rounded-lg border border-white/10 bg-black/20 px-3.5 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-amber/70; }
-.prose-pole { @apply font-serif text-[1.09rem] leading-8 text-zinc-300; }
-.prose-pole h2 { @apply mt-10 text-2xl font-semibold leading-tight text-paper; }
-.prose-pole h3 { @apply mt-8 text-xl font-semibold text-paper; }
-.prose-pole p { @apply my-5; }
-.prose-pole a { @apply text-amber underline underline-offset-4; }
-.prose-pole blockquote { @apply my-7 border-l-2 border-amber/70 pl-5 italic text-zinc-400; }
-.prose-pole ul { @apply my-5 list-disc space-y-2 pl-6; }
-.prose-pole ol { @apply my-5 list-decimal space-y-2 pl-6; }
-.prose-pole pre { @apply my-6 overflow-x-auto rounded-xl bg-black/35 p-4 font-mono text-sm; }
-.tiptap { @apply min-h-80 outline-none; }
-.tiptap p { @apply my-3; }
-.tiptap h2 { @apply my-5 text-2xl font-bold; }
-.tiptap h3 { @apply my-4 text-xl font-bold; }
-.tiptap ul { @apply list-disc pl-6; }
-.tiptap ol { @apply list-decimal pl-6; }
+:root {
+  color-scheme: dark;
+  --ink: #0b0d10;
+  --paper: #f2eee6;
+  --amber: #e0a65a;
+  --amber-soft: rgba(224, 166, 90, 0.1);
+}
+
+* {
+  border-color: rgb(255 255 255 / 0.08);
+}
+
+html {
+  scrollbar-gutter: stable;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen bg-ink text-zinc-200 antialiased;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #1f2a36 0%, transparent 55%),
+    radial-gradient(800px 400px at 90% 10%, rgba(224, 166, 90, 0.07) 0%, transparent 60%),
+    linear-gradient(180deg, #0b0d10 0%, #0e1116 100%);
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+::selection {
+  background: rgba(224, 166, 90, 0.3);
+  color: #fff;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0b0d10;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a303b;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3a4452;
+}
+
+a {
+  @apply transition-colors;
+}
+
+.shell {
+  @apply mx-auto w-full max-w-6xl px-5 sm:px-8;
+}
+
+.panel {
+  @apply rounded-2xl border border-white/[0.07] bg-white/[0.035] shadow-2xl shadow-black/30 backdrop-blur-sm;
+}
+.panel-hover {
+  @apply transition-all duration-300 hover:border-amber/20 hover:bg-white/[0.05] hover:shadow-amber/5;
+}
+.glass {
+  @apply border border-white/10 bg-black/20 backdrop-blur-xl;
+}
+
+.button {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl bg-amber px-5 py-2.5 text-sm font-semibold tracking-wide text-zinc-950 shadow-lg shadow-amber/20 transition-all hover:bg-amber/90 hover:shadow-amber/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none;
+}
+.button-secondary {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.06] px-5 py-2.5 text-sm font-semibold text-zinc-100 backdrop-blur transition-all hover:border-white/15 hover:bg-white/10 active:scale-[0.98];
+}
+.button-ghost {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/5 hover:text-zinc-100;
+}
+
+.field {
+  @apply w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none transition-all focus:border-amber/50 focus:bg-black/40 focus:ring-4 focus:ring-amber/10;
+}
+.field-error {
+  @apply border-red-500/50 focus:border-red-500 focus:ring-red-500/10;
+}
+
+.prose-pole {
+  @apply font-serif text-[1.07rem] leading-[1.9] text-zinc-300;
+}
+.prose-pole h2 {
+  @apply mt-12 font-serif text-3xl font-semibold leading-tight tracking-tight text-paper;
+}
+.prose-pole h3 {
+  @apply mt-10 font-serif text-2xl font-semibold leading-tight text-paper;
+}
+.prose-pole h4 {
+  @apply mt-8 text-lg font-semibold text-paper;
+}
+.prose-pole p {
+  @apply my-6;
+}
+.prose-pole a {
+  @apply font-medium text-amber underline decoration-amber/30 underline-offset-4 hover:decoration-amber;
+}
+.prose-pole blockquote {
+  @apply my-8 border-l-2 border-amber/60 bg-amber/[0.04] py-4 pl-6 pr-4 italic text-zinc-300;
+}
+.prose-pole ul {
+  @apply my-6 list-disc space-y-2.5 pl-6 marker:text-amber/60;
+}
+.prose-pole ol {
+  @apply my-6 list-decimal space-y-2.5 pl-6 marker:font-medium marker:text-amber;
+}
+.prose-pole pre {
+  @apply my-7 overflow-x-auto rounded-xl border border-white/10 bg-black/40 p-5 font-mono text-sm leading-relaxed;
+}
+.prose-pole code:not(pre code) {
+  @apply rounded-md bg-white/10 px-1.5 py-0.5 font-mono text-sm text-amber;
+}
+.prose-pole hr {
+  @apply my-10 border-white/10;
+}
+.prose-pole img {
+  @apply my-8 rounded-2xl;
+}
+
+.tiptap {
+  @apply min-h-[22rem] outline-none;
+}
+.tiptap p {
+  @apply my-3 leading-7;
+}
+.tiptap h2 {
+  @apply my-6 text-2xl font-bold tracking-tight;
+}
+.tiptap h3 {
+  @apply my-5 text-xl font-bold;
+}
+.tiptap ul {
+  @apply list-disc pl-6;
+}
+.tiptap ol {
+  @apply list-decimal pl-6;
+}
+.tiptap blockquote {
+  @apply border-l-2 border-amber/50 pl-4 italic text-zinc-400;
+}
+.tiptap a {
+  @apply text-amber underline;
+}
+.tiptap code {
+  @apply rounded bg-white/10 px-1 py-0.5 font-mono text-sm;
+}
+.tiptap pre {
+  @apply rounded-xl bg-black/40 p-4 font-mono text-sm;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}

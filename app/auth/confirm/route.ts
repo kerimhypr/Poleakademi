@@ -7,9 +7,14 @@ export async function GET(request: NextRequest) {
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next");
-  const destination = next?.startsWith("/") && !next.startsWith("//") ? next : "/";
-  if (!tokenHash || !type) return NextResponse.redirect(new URL("/giris?error=dogrulama", request.url));
+  const safeNext = next?.startsWith("/") && !next.startsWith("//") ? next : "/";
+
+  if (!tokenHash || !type) {
+    return NextResponse.redirect(new URL("/giris?error=dogrulama", request.url));
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type });
-  return NextResponse.redirect(new URL(error ? "/giris?error=dogrulama" : destination, request.url));
+
+  return NextResponse.redirect(new URL(error ? "/giris?error=dogrulama" : safeNext, request.url));
 }
