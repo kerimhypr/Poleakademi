@@ -1,0 +1,5 @@
+"use client";
+import Link from "next/link";
+import { useActionState } from "react";
+import { requestPasswordReset } from "@/app/auth/actions";
+export default function ForgotPasswordPage() { const [state, action, pending] = useActionState(requestPasswordReset, {}); return <main className="shell flex min-h-[calc(100vh-4rem)] items-center justify-center py-12"><form action={action} className="panel w-full max-w-md p-7"><h1 className="font-serif text-3xl text-paper">Şifreni yenile</h1><p className="mt-2 text-sm text-zinc-500">E-posta adresini gir; hesap güvenliği için sonucu her zaman aynı şekilde gösteririz.</p><div className="mt-7 space-y-4"><input name="email" className="field" type="email" placeholder="E-posta" required />{state.error && <p className="text-sm text-red-400">{state.error}</p>}{state.message && <p className="text-sm text-emerald-400">{state.message}</p>}<button disabled={pending} className="button w-full">{pending ? "Gönderiliyor…" : "Bağlantı gönder"}</button></div><p className="mt-6 text-center text-sm"><Link className="text-amber" href="/giris">Girişe dön</Link></p></form></main>; }

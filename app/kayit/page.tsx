@@ -1,0 +1,5 @@
+"use client";
+import Link from "next/link";
+import { useActionState } from "react";
+import { signUp } from "@/app/auth/actions";
+export default function SignUpPage() { const [state, action, pending] = useActionState(signUp, {}); return <main className="shell flex min-h-[calc(100vh-4rem)] items-center justify-center py-12"><form action={action} className="panel w-full max-w-md p-7"><h1 className="font-serif text-3xl text-paper">Akademiye katıl</h1><div className="mt-7 space-y-4"><input name="displayName" className="field" placeholder="Görünen ad" required /><input name="email" className="field" type="email" placeholder="E-posta" required /><input name="password" className="field" type="password" placeholder="Şifre (en az 8 karakter)" required />{state.error && <p className="text-sm text-red-400">{state.error}</p>}{state.message && <p className="text-sm text-emerald-400">{state.message}</p>}<button disabled={pending} className="button w-full">{pending ? "Oluşturuluyor…" : "Hesap oluştur"}</button></div><p className="mt-6 text-center text-sm text-zinc-500"><Link className="text-amber" href="/giris">Girişe dön</Link></p></form></main>; }
