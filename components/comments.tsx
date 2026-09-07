@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { CornerDownRight, MessageCircle, X, PenLine, ThumbsUp, ThumbsDown } from "lucide-react";
 import type { Comment, VoteCounts } from "@/lib/types";
@@ -92,7 +92,12 @@ function CommentNode({
 }) {
   const [reply, setReply] = useState(false);
   const replies = children.get(comment.id) ?? [];
-  const vc = voteCounts[comment.id] ?? { likes: 0, dislikes: 0, score: 0, userVote: null };
+  const initial = voteCounts[comment.id] ?? { likes: 0, dislikes: 0, score: 0, userVote: null as 1 | -1 | null };
+  const [optimistic, setOptimistic] = useState(initial);
+  useEffect(() => {
+    setOptimistic(initial);
+  }, [initial.likes, initial.dislikes, initial.userVote]);
+  const vc = optimistic;
 
   return (
     <article className={depth > 0 ? "relative" : ""}>
@@ -122,19 +127,47 @@ function CommentNode({
             <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-300">{comment.body}</p>
 
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              {/* Like / Dislike - bug-free: server action handles toggle (same value → delete, opposite → update) */}
-              <form action={voteComment} className="inline-flex items-center overflow-hidden rounded-full border border-white/10 bg-white/5">
-                <input type="hidden" name="commentId" value={comment.id} />
-                <input type="hidden" name="slug" value={slug} />
-                <button name="value" value="1" disabled={!signedIn} title={signedIn ? "Beğen" : "Giriş yapmalısın"} className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium transition-colors ${vc.userVote === 1 ? "bg-amber text-black" : "text-zinc-400 hover:bg-white/10 hover:text-amber"} disabled:opacity-50`}>
+              <div className="inline-flex items-center overflow-hidden rounded-full border border-white/10 bg-white/5">
+                <button
+                  onClick={() => {
+                    if (!signedIn) return;
+                    const v = vc.userVote;
+                    if (v === 1) setOptimistic({ likes: Math.max(0, vc.likes - 1), dislikes: vc.dislikes, score: vc.score - 1, userVote: null });
+                    else if (v === -1) setOptimistic({ likes: vc.likes + 1, dislikes: Math.max(0, vc.dislikes - 1), score: vc.score + 2, userVote: 1 });
+                    else setOptimistic({ likes: vc.likes + 1, dislikes: vc.dislikes, score: vc.score + 1, userVote: 1 });
+                    const fd = new FormData();
+                    fd.set("commentId", comment.id);
+                    fd.set("slug", slug);
+                    fd.set("value", "1");
+                    voteComment(fd);
+                  }}
+                  disabled={!signedIn}
+                  title={signedIn ? "Beğen" : "Giriş yapmalısın"}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium transition-colors ${vc.userVote === 1 ? "bg-amber text-black" : "text-zinc-400 hover:bg-white/10 hover:text-amber"} disabled:opacity-50`}
+                >
                   <ThumbsUp size={12} className="shrink-0" /> {vc.likes}
                 </button>
                 <span className="h-4 w-px bg-white/10" />
-                <button name="value" value="-1" disabled={!signedIn} title={signedIn ? "Beğenme" : "Giriş yapmalısın"} className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium transition-colors ${vc.userVote === -1 ? "bg-red-500 text-white" : "text-zinc-400 hover:bg-white/10 hover:text-red-400"} disabled:opacity-50`}>
+                <button
+                  onClick={() => {
+                    if (!signedIn) return;
+                    const v = vc.userVote;
+                    if (v === -1) setOptimistic({ likes: vc.likes, dislikes: Math.max(0, vc.dislikes - 1), score: vc.score + 1, userVote: null });
+                    else if (v === 1) setOptimistic({ likes: Math.max(0, vc.likes - 1), dislikes: vc.dislikes + 1, score: vc.score - 2, userVote: -1 });
+                    else setOptimistic({ likes: vc.likes, dislikes: vc.dislikes + 1, score: vc.score - 1, userVote: -1 });
+                    const fd = new FormData();
+                    fd.set("commentId", comment.id);
+                    fd.set("slug", slug);
+                    fd.set("value", "-1");
+                    voteComment(fd);
+                  }}
+                  disabled={!signedIn}
+                  title={signedIn ? "Beğenme" : "Giriş yapmalısın"}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium transition-colors ${vc.userVote === -1 ? "bg-red-500 text-white" : "text-zinc-400 hover:bg-white/10 hover:text-red-400"} disabled:opacity-50`}
+                >
                   <ThumbsDown size={12} className="shrink-0" /> {vc.dislikes}
                 </button>
-              </form>
-              {vc.score !== 0 && <span className={`text-xs font-medium ${vc.score > 0 ? "text-emerald-400" : "text-red-400"}`}>{vc.score > 0 ? `+${vc.score}` : vc.score}</span>}
+              </div>
 
               {signedIn && (
                 <button
