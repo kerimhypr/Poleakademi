@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useActionState } from "react";
-import { CornerDownRight, MessageCircle } from "lucide-react";
+import { CornerDownRight, MessageCircle, X, PenLine } from "lucide-react";
 import type { DiscussionComment } from "@/lib/types";
 import { Avatar } from "@/components/avatar";
 import { formatDate } from "@/lib/utils";
@@ -21,11 +21,12 @@ export function DiscussionComments({
   const byParent = new Map<string | null, DiscussionComment[]>();
   comments.forEach((c) => byParent.set(c.parent_id, [...(byParent.get(c.parent_id) ?? []), c]));
   const roots = byParent.get(null) ?? [];
+  const [showMain, setShowMain] = useState(false);
 
   return (
     <section className="mt-10">
       <h2 className="flex items-center gap-2 font-serif text-2xl font-semibold text-paper">
-        <MessageCircle size={20} className="text-amber" /> Yorumlar
+        <MessageCircle size={20} className="shrink-0 text-amber" /> Yorumlar
         <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-sm font-normal text-zinc-400">{comments.length}</span>
       </h2>
 
@@ -37,7 +38,21 @@ export function DiscussionComments({
 
       {signedIn && (
         <div className="mt-6">
-          <DiscussionCommentForm discussionId={discussionId} slug={slug} />
+          {!showMain ? (
+            <button onClick={() => setShowMain(true)} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-medium text-zinc-200 hover:bg-white/10 hover:border-white/15 transition-colors">
+              <PenLine size={16} className="shrink-0" /> Yorum yaz
+            </button>
+          ) : (
+            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-zinc-300">Yorumun</span>
+                <button onClick={() => setShowMain(false)} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-zinc-500 hover:bg-white/10 hover:text-zinc-300">
+                  <X size={14} className="shrink-0" /> Kapat
+                </button>
+              </div>
+              <DiscussionCommentForm discussionId={discussionId} slug={slug} />
+            </div>
+          )}
         </div>
       )}
 
@@ -83,11 +98,21 @@ function DiscussionCommentNode({
           </div>
           <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6 text-zinc-300">{comment.body}</p>
           {signedIn && (
-            <button onClick={() => setReply(!reply)} className="mt-2 inline-flex items-center gap-1 rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-zinc-400 hover:bg-white/10 hover:text-amber">
-              <CornerDownRight size={12} /> {reply ? "Kapat" : "Yanıtla"}
+            <button onClick={() => setReply(!reply)} className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1.5 text-xs font-medium text-zinc-400 hover:bg-white/10 hover:text-amber transition-colors">
+              <CornerDownRight size={12} className="shrink-0" /> {reply ? "Kapat" : "Yanıtla"}
             </button>
           )}
-          {reply && <DiscussionCommentForm discussionId={discussionId} slug={slug} parentId={comment.id} compact />}
+          {reply && (
+            <div className="mt-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-medium text-zinc-400">Yanıt yaz</span>
+                <button onClick={() => setReply(false)} className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-300">
+                  <X size={12} className="shrink-0" /> Kapat
+                </button>
+              </div>
+              <DiscussionCommentForm discussionId={discussionId} slug={slug} parentId={comment.id} compact />
+            </div>
+          )}
         </div>
       </div>
       {replies.length > 0 && (

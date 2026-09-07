@@ -35,7 +35,7 @@ export function CommentForm({
 
       <div className="mt-3 flex items-center gap-3">
         <button disabled={pending} className="button !px-4 !py-2 text-sm">
-          <Send size={14} />
+          <Send size={14} className="shrink-0" />
           {pending ? "Gönderiliyor…" : "Gönder"}
         </button>
         {state.error && <p className="text-sm text-red-400">{state.error}</p>}
