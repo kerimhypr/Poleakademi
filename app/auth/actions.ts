@@ -26,7 +26,7 @@ export async function signIn(_: AuthState, formData: FormData): Promise<AuthStat
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { error: "E-posta veya şifre hatalı. Hesabını doğruladığından emin ol." };
+  if (error) return { error: "E-posta veya şifre hatalı." };
   redirect("/");
 }
 
@@ -39,7 +39,7 @@ export async function signUp(_: AuthState, formData: FormData): Promise<AuthStat
   if (!parsed.success) return { error: parsed.error.issues[0].message };
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
@@ -48,7 +48,21 @@ export async function signUp(_: AuthState, formData: FormData): Promise<AuthStat
     },
   });
   if (error) return { error: error.message };
-  return { message: "Hesap oluşturuldu. E-postanı doğruladıktan sonra giriş yapabilirsin." };
+
+  // E-posta doğrulaması devre dışı (auto_confirm trigger) — direkt giriş dene
+  if (data.session) {
+    redirect("/?kayit=basarili");
+  }
+  // Session yoksa hemen giriş yapmayı dene
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: parsed.data.email,
+    password: parsed.data.password,
+  });
+  if (!signInError) {
+    redirect("/?kayit=basarili");
+  }
+  // Her halükarda ana sayfaya at, mesaj göster
+  redirect("/?kayit=basarili");
 }
 
 export async function signOut() {

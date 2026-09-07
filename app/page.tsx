@@ -7,7 +7,8 @@ import type { Article } from "@/lib/types";
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ kayit?: string }> }) {
+  const { kayit } = await searchParams;
   const supabase = await createClient();
   const [{ data: articlesData }, { data: discussionsData }] = await Promise.all([
     supabase.from("articles").select("*").eq("status", "published").order("published_at", { ascending: false }).limit(6),
@@ -18,6 +19,13 @@ export default async function HomePage() {
 
   return (
     <main>
+      {kayit === "basarili" && (
+        <div className="shell pt-6">
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-center text-sm font-medium text-emerald-300">
+            Kayıt başarılı! Hoş geldin — ana sayfadasın.
+          </div>
+        </div>
+      )}
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-amber/[0.04] via-transparent to-transparent" />
