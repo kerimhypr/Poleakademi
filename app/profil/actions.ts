@@ -47,7 +47,28 @@ export async function updateMyProfile(_: ProfileActionState, formData: FormData)
   };
   if (avatarPath) update.avatar_path = avatarPath;
 
-  const { error } = await supabase.from("profiles").update(update).eq("id", user.id);
+  // Önce profil var mı kontrol et — yoksa upsert ile oluştur (RLS insert politikası var)
+  const { data: existing } = await supabase.from("profiles").select("id, avatar_path").eq("id", user.id).maybeSingle();
+  let error: unknown = null;
+  if (!existing) {
+    const { error: insertError } = await supabase.from("profiles").insert({
+      id: user.id,
+      display_name: parsed.data.displayName,
+      bio: parsed.data.bio,
+      avatar_path: avatarPath ?? null,
+      title: null,
+      role: "user" as const,
+    });
+    error = insertError;
+  } else {
+    const payload: Record<string, unknown> = { ...update };
+    // avatar güncellenmiyorsa mevcut değeri koru (null'a ezme)
+    if (!avatarPath && existing.avatar_path) {
+      // update içinde avatar_path yoksa dokunma
+    }
+    const { error: updateError } = await supabase.from("profiles").update(payload).eq("id", user.id);
+    error = updateError;
+  }
   if (error) return { error: "Profil güncellenemedi. Lütfen tekrar deneyin." };
 
   revalidatePath("/profil");
