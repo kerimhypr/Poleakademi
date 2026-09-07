@@ -20,7 +20,7 @@ export function DiscussionForm() {
         <span className="mb-2 block text-sm font-medium text-zinc-300">İçerik *</span>
         <RichTextEditor initialContent={content} onChange={setContent} />
         <input type="hidden" name="content" value={JSON.stringify(content)} />
-        <p className="mt-2 text-xs text-zinc-600">Reddit tarzı: Herkes görebilir, herkes yorum yapabilir.</p>
+        <p className="mt-2 text-xs text-zinc-600">Herkes görebilir, herkes yorum yapabilir.</p>
       </div>
 
       <button disabled={pending} className="button">

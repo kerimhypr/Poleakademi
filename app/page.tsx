@@ -110,13 +110,13 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         )}
       </section>
 
-      {/* Tartışmalar - Reddit tarzı */}
+      {/* Tartışmalar */}
       <section id="tartismalar" className="shell pb-16 sm:pb-24">
         <div className="mb-8 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber">Topluluk</p>
             <h2 className="mt-1 font-serif text-3xl font-semibold tracking-tight text-paper">Tartışmalar</h2>
-            <p className="mt-2 text-sm text-zinc-500">Reddit tarzı — herkesin açabildiği başlıklar, herkesin yorum yapabildiği özgür alan.</p>
+            <p className="mt-2 text-sm text-zinc-500">Herkesin açabildiği başlıklar, herkesin yorum yapabildiği özgür alan.</p>
           </div>
           <Link href="/tartismalar" className="button-secondary !px-4 !py-2 text-sm hidden sm:inline-flex">
             Tüm tartışmalar <ArrowRight size={14} />

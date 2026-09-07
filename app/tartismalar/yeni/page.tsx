@@ -13,7 +13,7 @@ export default async function YeniTartismaPage() {
       <div className="mb-8">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber">Topluluk</p>
         <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-paper">Yeni tartışma</h1>
-        <p className="mt-2 text-sm text-zinc-500">Herkesin açabildiği Reddit tarzı başlık — saygılı, delile dayalı.</p>
+        <p className="mt-2 text-sm text-zinc-500">Herkesin açabildiği başlık — saygılı, delile dayalı.</p>
       </div>
       <DiscussionForm />
     </main>

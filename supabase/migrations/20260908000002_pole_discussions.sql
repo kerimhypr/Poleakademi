@@ -1,4 +1,4 @@
--- Pole tartışmaları: Reddit tarzı herkesin açabildiği başlıklar
+-- Pole tartışmaları: herkesin açabildiği başlıklar
 -- Pole'nin yazıları (articles) sadece admin tarafından oluşturulur ve resmi kalır
 
 create table if not exists public.discussions (

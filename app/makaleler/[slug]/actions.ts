@@ -33,3 +33,23 @@ export async function addComment(_: { error?: string }, formData: FormData) {
   revalidatePath(`/makaleler/${parsed.data.slug}`);
   return {};
 }
+
+export async function voteComment(formData: FormData): Promise<void> {
+  const { user } = await getCurrentUser();
+  if (!user) return;
+  const parsed = z.object({ commentId: z.string().uuid(), slug: z.string().min(1), value: z.enum(["1", "-1"]) }).safeParse(Object.fromEntries(formData));
+  if (!parsed.success) return;
+  const supabase = await createClient();
+  const value = parseInt(parsed.data.value, 10) as 1 | -1;
+  const { data: existing } = await supabase.from("comment_votes").select("id,value").eq("comment_id", parsed.data.commentId).eq("user_id", user.id).maybeSingle();
+  if (existing) {
+    if (existing.value === value) {
+      await supabase.from("comment_votes").delete().eq("id", existing.id);
+    } else {
+      await supabase.from("comment_votes").update({ value }).eq("id", existing.id);
+    }
+  } else {
+    await supabase.from("comment_votes").insert({ comment_id: parsed.data.commentId, user_id: user.id, value });
+  }
+  revalidatePath(`/makaleler/${parsed.data.slug}`);
+}

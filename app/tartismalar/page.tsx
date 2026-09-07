@@ -23,7 +23,7 @@ export default async function TartismalarPage() {
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber">Topluluk</p>
           <h1 className="mt-2 font-serif text-4xl font-semibold tracking-tight text-paper">Tartışmalar</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">Reddit tarzı — herkes başlık açabilir, herkes yorum yapabilir. Bağımsız bir İslam tartışma alanı.</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">Herkes başlık açabilir, herkes yorum yapabilir. Bağımsız bir İslam tartışma alanı.</p>
         </div>
         {user ? (
           <Link href="/tartismalar/yeni" className="button">

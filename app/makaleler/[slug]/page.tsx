@@ -47,6 +47,20 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     getCurrentUser(),
   ]);
 
+  // Vote counts for comments
+  const commentIds = (comments ?? []).map((c: { id: string }) => c.id);
+  const voteCounts: Record<string, { likes: number; dislikes: number; score: number; userVote: 1 | -1 | null }> = {};
+  if (commentIds.length) {
+    const { data: votes } = await supabase.from("comment_votes").select("comment_id, value, user_id").in("comment_id", commentIds);
+    for (const c of commentIds) {
+      const v = (votes ?? []).filter((x) => x.comment_id === c);
+      const likes = v.filter((x) => x.value === 1).length;
+      const dislikes = v.filter((x) => x.value === -1).length;
+      const userVote = (v.find((x) => x.user_id === user?.id)?.value as 1 | -1 | undefined) ?? null;
+      voteCounts[c] = { likes, dislikes, score: likes - dislikes, userVote };
+    }
+  }
+
   const cover = article.cover_path
     ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/article-covers/${article.cover_path}`
     : null;
@@ -115,6 +129,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
               articleId={article.id}
               slug={article.slug}
               signedIn={Boolean(user)}
+              voteCounts={voteCounts}
             />
           </div>
         </div>

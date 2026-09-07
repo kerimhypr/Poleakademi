@@ -27,6 +27,20 @@ export default async function DiscussionPage({ params }: { params: Promise<{ slu
 
   const profile = author as Profile | null;
 
+  // Vote counts for discussion comments
+  const commentIds = (comments ?? []).map((c: { id: string }) => c.id);
+  const voteCounts: Record<string, { likes: number; dislikes: number; score: number; userVote: 1 | -1 | null }> = {};
+  if (commentIds.length) {
+    const { data: votes } = await supabase.from("discussion_comment_votes").select("discussion_comment_id, value, user_id").in("discussion_comment_id", commentIds);
+    for (const c of commentIds) {
+      const v = (votes ?? []).filter((x) => x.discussion_comment_id === c);
+      const likes = v.filter((x) => x.value === 1).length;
+      const dislikes = v.filter((x) => x.value === -1).length;
+      const userVote = (v.find((x) => x.user_id === user?.id)?.value as 1 | -1 | undefined) ?? null;
+      voteCounts[c] = { likes, dislikes, score: likes - dislikes, userVote };
+    }
+  }
+
   return (
     <main className="shell max-w-4xl pb-16">
       <div className="py-6 flex items-center gap-2 text-sm">
@@ -41,7 +55,7 @@ export default async function DiscussionPage({ params }: { params: Promise<{ slu
         <div className="p-6 sm:p-10">
           <div className="mx-auto max-w-3xl">
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-zinc-400">Reddit tarzı tartışma</span>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white/5 px-3 py-1 text-zinc-400">Topluluk tartışması</span>
               <span className="inline-flex items-center gap-1 rounded-full bg-white/5 px-2.5 py-1 text-zinc-400">
                 <Clock size={12} /> {formatDate(discussion.created_at)}
               </span>
@@ -65,7 +79,7 @@ export default async function DiscussionPage({ params }: { params: Promise<{ slu
           </div>
 
           <div className="mx-auto mt-10 max-w-3xl">
-            <DiscussionComments comments={(comments ?? []) as DiscussionComment[]} discussionId={discussion.id} slug={discussion.slug} signedIn={Boolean(user)} />
+            <DiscussionComments comments={(comments ?? []) as DiscussionComment[]} discussionId={discussion.id} slug={discussion.slug} signedIn={Boolean(user)} voteCounts={voteCounts} />
           </div>
         </div>
       </article>

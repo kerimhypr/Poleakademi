@@ -27,3 +27,10 @@ export type DiscussionComment = {
   id: string; discussion_id: string; author_id: string; parent_id: string | null;
   body: string; created_at: string; updated_at: string; profiles: Pick<Profile, "id" | "display_name" | "avatar_path" | "title"> | null;
 };
+export type CommentVote = {
+  id: string; comment_id: string; user_id: string; value: 1 | -1; created_at: string;
+};
+export type DiscussionCommentVote = {
+  id: string; discussion_comment_id: string; user_id: string; value: 1 | -1; created_at: string;
+};
+export type VoteCounts = { likes: number; dislikes: number; score: number; userVote: 1 | -1 | null };
